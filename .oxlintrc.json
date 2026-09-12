@@ -12,7 +12,6 @@
   },
   "ignorePatterns": [
     "vendor/browser-diagnostics/**",
-    "public/browser-diagnostics.js",
-    "public/worker/assets.generated.js"
+    "public/browser-diagnostics.js"
   ]
 }

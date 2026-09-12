@@ -39,9 +39,9 @@ IP 查询、网络诊断、浏览器检测与 AI 服务状态工具箱。
 4. 构建命令填 `pnpm build`，部署命令填 `pnpm deploy`。使用 Node.js 24 和 pnpm 12.4.1（与 `package.json` 的 `packageManager` 一致），根目录保持默认。
 5. 点击部署，完成后打开 `workers.dev` 地址。自定义域名在 Worker 设置中绑定。
 
-项目部署为**单个 Cloudflare Worker**，不配置 Static Assets：`pnpm build` 会把 `dist/` 中的前端产物嵌入 Worker，一次 `pnpm deploy` 同时发布页面与 `/api/*` 接口。基础功能无需应用环境变量或 API Key。Turnstile 和 reCAPTCHA 的配置见“验证体验”。
+项目使用 **Cloudflare Workers + Static Assets**，`/api/*` 接口需要 Worker。基础功能无需应用环境变量或 API Key。Turnstile 和 reCAPTCHA 的配置见“验证体验”。
 
-Workers Builds 会在 `main` 收到提交时构建和部署。上方按钮部署的是本仓库的单 Worker 形态；上游功能更新按 [SITE.md](SITE.md) 的方式手动跟踪。
+Workers Builds 会在 `main` 收到提交时构建和部署。上方按钮部署的是本仓库（依赖跟进与部署配置）；上游功能更新按 [SITE.md](SITE.md) 的方式手动跟踪。
 
 ## 功能
 
@@ -147,7 +147,7 @@ pnpm exec wrangler login
 pnpm deploy
 ```
 
-`pnpm build` 的最后一步由 `scripts/build-worker-assets.mjs` 把 `dist/` 嵌入 `public/worker/assets.generated.js`（已在 Git 忽略列表，不入库），`pnpm deploy` 发布的就是这份 Worker 脚本，因此运行前必须执行 `pnpm build`。`make deploy` 包含版本更新、构建和部署，无需密钥文件。
+`pnpm deploy` 使用 `dist` 中的构建产物，运行前需要执行 `pnpm build`。`make deploy` 包含版本更新、构建和部署，无需密钥文件。
 
 esbuild 与 workerd 需要运行安装脚本，授权写在 `pnpm-workspace.yaml` 的 `allowBuilds`。pnpm 12 不再读取旧的 `onlyBuiltDependencies`，写错时本地安装只是警告并正常结束，CI 会以 `ERR_PNPM_IGNORED_BUILDS` 失败。
 
@@ -176,8 +176,7 @@ reCAPTCHA 使用 v3 评分型密钥。服务端校验 hostname、`browser_check`
 ## 项目结构与数据来源
 
 - `src/app.css`：界面样式；`src/components/ui`：shadcn/ui 组件。
-- `src/views`：网络、浏览器、AI 与状态页面；`public/worker`：Worker API 与前端资源路由。
-- `public/worker/static-assets.js`：Worker 直接响应前端请求，负责 SPA 回退、缓存与安全响应头；`scripts/build-worker-assets.mjs`：构建时把 `dist/` 嵌入 Worker。
+- `src/views`：网络、浏览器、AI 与状态页面；`public/worker`：Worker API。
 - Net.Coffee：IP 详情，展示字段取决于接口返回。
 - Globalping：全球测量；IANA / RDAP：注册资料；各平台官方状态源：运行状态。
 - FingerprintJS 与 CreepJS：浏览器检测，模块说明见 [vendor/browser-diagnostics](vendor/browser-diagnostics/README.md)。

@@ -55,9 +55,9 @@ Returns `ip`, `source`, `checked_at`, `score`, `status`, location, ISP, ASN and 
 4. Set the build command to `pnpm build` and the deploy command to `pnpm deploy`. Use Node.js 24 and pnpm 12.4.1 (the version pinned by `packageManager` in `package.json`). Keep the default root directory.
 5. Deploy and open the assigned `workers.dev` address. Use the Worker settings to connect a custom domain.
 
-The project deploys as a **single Cloudflare Worker** with no Static Assets binding: `pnpm build` embeds the front end from `dist/` into the Worker, so one `pnpm deploy` publishes both the pages and the `/api/*` routes. Core features require no application environment variables or API keys. See “Verification” for Turnstile and reCAPTCHA setup.
+The project uses **Cloudflare Workers with Static Assets**. The `/api/*` routes need a Worker. Core features require no application environment variables or API keys. See “Verification” for Turnstile and reCAPTCHA setup.
 
-Workers Builds builds and deploys when `main` receives a commit. The button above deploys this repository's single-Worker setup; upstream feature updates are tracked manually as described in [SITE.md](SITE.md).
+Workers Builds builds and deploys when `main` receives a commit. The button above deploys this repository (current dependencies plus deployment configuration); upstream feature updates are tracked manually as described in [SITE.md](SITE.md).
 
 ## Features
 
@@ -141,7 +141,7 @@ pnpm exec wrangler login
 pnpm deploy
 ```
 
-`pnpm build` finishes by embedding `dist/` into `public/worker/assets.generated.js` (Git-ignored, never committed) via `scripts/build-worker-assets.mjs`. `pnpm deploy` publishes that Worker script, so always run `pnpm build` first. `make deploy` updates the version, builds and deploys without a secrets file.
+`pnpm deploy` uses the build output in `dist`; run `pnpm build` before deployment. `make deploy` updates the version, builds and deploys without a secrets file.
 
 esbuild and workerd run install scripts, approved by `allowBuilds` in `pnpm-workspace.yaml`. pnpm 12 no longer reads the older `onlyBuiltDependencies` key: a wrong entry only warns during a local install and still exits successfully, while CI fails with `ERR_PNPM_IGNORED_BUILDS`.
 
@@ -170,8 +170,7 @@ reCAPTCHA uses v3 score-based keys. The backend validates hostname, the `browser
 ## Structure and data sources
 
 - `src/app.css`: interface styles; `src/components/ui`: shadcn/ui components.
-- `src/views`: network, browser, AI and status pages; `public/worker`: Worker APIs and front-end asset routes.
-- `public/worker/static-assets.js`: serves the front end from the Worker, including SPA fallback, caching and security headers; `scripts/build-worker-assets.mjs`: embeds `dist/` into the Worker at build time.
+- `src/views`: network, browser, AI and status pages; `public/worker`: Worker APIs.
 - Net.Coffee: IP details. Available fields depend on the API response.
 - Globalping: global measurements; IANA / RDAP: registration records; official platform status feeds: service status.
 - FingerprintJS and CreepJS: browser checks. See [vendor/browser-diagnostics](vendor/browser-diagnostics/README.md) for module details.
