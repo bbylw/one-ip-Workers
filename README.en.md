@@ -3,7 +3,7 @@
 <p align="left">
   <img src="https://img.shields.io/badge/React-19-282C34?logo=react&amp;logoColor=61DAFB" alt="React 19" />
   <img src="https://img.shields.io/badge/Vite-8-646CFF?logo=vite&amp;logoColor=white" alt="Vite 8" />
-  <img src="https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&amp;logoColor=white" alt="TypeScript 6" />
+  <img src="https://img.shields.io/badge/TypeScript-7-3178C6?logo=typescript&amp;logoColor=white" alt="TypeScript 7" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&amp;logoColor=white" alt="Tailwind CSS" />
   <img src="https://img.shields.io/badge/shadcn%2Fui-000000?logo=shadcnui&amp;logoColor=white" alt="shadcn/ui" />
   <img src="https://img.shields.io/badge/Lucide-F56565?logo=lucide&amp;logoColor=white" alt="Lucide" />
@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/badge/TanStack_Query-FF4154?logo=reactquery&amp;logoColor=white" alt="TanStack Query" />
   <img src="https://img.shields.io/badge/Cloudflare_Workers-F38020?logo=cloudflareworkers&amp;logoColor=white" alt="Cloudflare Workers" />
   <img src="https://img.shields.io/badge/Leaflet-199900?logo=leaflet&amp;logoColor=white" alt="Leaflet" />
-  <img src="https://img.shields.io/badge/pnpm-10-F69220?logo=pnpm&amp;logoColor=white" alt="pnpm 10" />
+  <img src="https://img.shields.io/badge/pnpm-12-F69220?logo=pnpm&amp;logoColor=white" alt="pnpm 12" />
   <img src="https://img.shields.io/badge/Prettier-F7B93E?logo=prettier&amp;logoColor=black" alt="Prettier" />
 </p>
 
@@ -50,10 +50,10 @@ Returns `ip`, `source`, `checked_at`, `score`, `status`, location, ISP, ASN and 
 1. [Fork this project](https://github.com/zhihui-hu/one-ip/fork) into your GitHub account.
 2. Open the [Cloudflare dashboard](https://dash.cloudflare.com/), go to **Workers & Pages**, create a Worker and choose to import a Git repository.
 3. Connect GitHub, select your `one-ip` fork and set the production branch to `main`.
-4. Set the build command to `pnpm build` and the deploy command to `pnpm deploy`. Use Node.js 24 and pnpm 10.32.1. Keep the default root directory.
+4. Set the build command to `pnpm build` and the deploy command to `pnpm deploy`. Use Node.js 24 and pnpm 12.4.1 (the version pinned by `packageManager` in `package.json`). Keep the default root directory.
 5. Deploy and open the assigned `workers.dev` address. Use the Worker settings to connect a custom domain.
 
-The project uses **Cloudflare Workers with Static Assets**. The `/api/*` routes need a Worker. Core features require no application environment variables or API keys. See “Verification” for Turnstile and reCAPTCHA setup.
+The project deploys as a **single Cloudflare Worker** with no Static Assets binding: `pnpm build` embeds the front end from `dist/` into the Worker, so one `pnpm deploy` publishes both the pages and the `/api/*` routes. Core features require no application environment variables or API keys. See “Verification” for Turnstile and reCAPTCHA setup.
 
 Workers Builds builds and deploys when `main` receives a commit. The button above points to the original repository. To preserve the fork relationship and update workflow, follow the steps to import your fork.
 
@@ -139,7 +139,9 @@ pnpm exec wrangler login
 pnpm deploy
 ```
 
-`pnpm deploy` uses the build output in `dist`; run `pnpm build` before deployment. `make deploy` updates the version, builds and deploys without a secrets file.
+`pnpm build` finishes by embedding `dist/` into `public/worker/assets.generated.js` (Git-ignored, never committed) via `scripts/build-worker-assets.mjs`. `pnpm deploy` publishes that Worker script, so always run `pnpm build` first. `make deploy` updates the version, builds and deploys without a secrets file.
+
+esbuild and workerd run install scripts, approved by `allowBuilds` in `pnpm-workspace.yaml`. pnpm 12 no longer reads the older `onlyBuiltDependencies` key: a wrong entry only warns during a local install and still exits successfully, while CI fails with `ERR_PNPM_IGNORED_BUILDS`.
 
 ## Verification (optional)
 
@@ -166,7 +168,8 @@ reCAPTCHA uses v3 score-based keys. The backend validates hostname, the `browser
 ## Structure and data sources
 
 - `src/app.css`: interface styles; `src/components/ui`: shadcn/ui components.
-- `src/views`: network, browser, AI and status pages; `public/worker`: Worker APIs.
+- `src/views`: network, browser, AI and status pages; `public/worker`: Worker APIs and front-end asset routes.
+- `public/worker/static-assets.js`: serves the front end from the Worker, including SPA fallback, caching and security headers; `scripts/build-worker-assets.mjs`: embeds `dist/` into the Worker at build time.
 - Net.Coffee: IP details. Available fields depend on the API response.
 - Globalping: global measurements; IANA / RDAP: registration records; official platform status feeds: service status.
 - FingerprintJS and CreepJS: browser checks. See [vendor/browser-diagnostics](vendor/browser-diagnostics/README.md) for module details.

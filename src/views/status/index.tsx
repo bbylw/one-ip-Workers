@@ -16,8 +16,8 @@ import { ResponsiveDialog } from "@/components/ui/responsive-dialog";
 import { UnderlineHover } from "@/components/underline-hover";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { t, locale } from "@/i18n";
+import { type Column } from "@/lib/table";
 import { useQueries } from "@tanstack/react-query";
-import type { ColumnDef } from "@tanstack/react-table";
 import { getStatus } from "./api";
 import { statusOrder } from "./order";
 import rawservices from "./services.json";
@@ -102,7 +102,7 @@ export default function StatusPage() {
       error: service.query.error?.message,
     })),
   );
-  const columns: ColumnDef<(typeof tableRows)[number]>[] = [
+  const columns: Column<(typeof tableRows)[number]>[] = [
     {
       accessorKey: "name",
       header: t("服务"),

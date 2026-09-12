@@ -5,7 +5,7 @@ import { DataTable, Pending } from "@/components/toolkit";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { t } from "@/i18n";
-import type { ColumnDef } from "@tanstack/react-table";
+import { type Column } from "@/lib/table";
 import type { PingResponse } from "../api";
 
 const formatLatency = (value: number) => value.toFixed(1);
@@ -20,7 +20,7 @@ interface Row {
   max?: number;
   loss?: number;
 }
-const columns: ColumnDef<Row>[] = [
+const columns: Column<Row>[] = [
   {
     accessorKey: "name",
     header: t("节点"),

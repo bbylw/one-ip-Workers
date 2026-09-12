@@ -19,8 +19,8 @@ import {
 import { ResponsiveDialog } from "@/components/ui/responsive-dialog";
 import { UnderlineHover } from "@/components/underline-hover";
 import { t } from "@/i18n";
+import { type Column } from "@/lib/table";
 import { useQuery } from "@tanstack/react-query";
-import type { ColumnDef } from "@tanstack/react-table";
 import { ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import type { FingerprintAlgorithm } from "./collect";
@@ -39,7 +39,7 @@ import {
 import { TlsFingerprint } from "./tls-fingerprint";
 import { withDetectionAnimation } from "./with-feedback";
 
-const columns: ColumnDef<Check>[] = [
+const columns: Column<Check>[] = [
   { accessorKey: "name", header: t("项目") },
   {
     accessorKey: "status",

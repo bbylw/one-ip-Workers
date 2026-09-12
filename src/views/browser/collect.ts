@@ -131,6 +131,12 @@ export type FingerprintAlgorithm = "modern" | "legacy";
 
 export async function fingerprint(algorithm: FingerprintAlgorithm = "modern") {
   if (algorithm === "legacy") {
+    // fingerprintjs2 is officially deprecated in favour of the v5 package below
+    // and will never receive another release, which is exactly why it stays: the
+    // legacy algorithm needs a second collector written against different
+    // primitives, and the gap between the two visitor IDs is the signal this row
+    // reports. Pointing the legacy branch at v5 would compare a collector with
+    // itself, so the package remains pinned at its final 2.1.4 release.
     const { default: Fingerprint2 } = await import("fingerprintjs2");
     // The legacy collector recommends waiting before collecting fonts and audio.
     await new Promise((resolve) => setTimeout(resolve, 500));

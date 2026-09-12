@@ -12,12 +12,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { t } from "@/i18n";
+import { type Column } from "@/lib/table";
 import type { RtcResult } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
-import type { ColumnDef } from "@tanstack/react-table";
 import { runWebRtc } from "./api";
 
-const columns: ColumnDef<RtcResult>[] = [
+const columns: Column<RtcResult>[] = [
   { id: "number", header: "#", cell: ({ row }) => row.index + 1 },
   {
     accessorKey: "ip",

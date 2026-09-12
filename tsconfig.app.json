@@ -18,6 +18,13 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* Pinned to the TypeScript 6 values because TypeScript 7 changed these
+       defaults. Dropping either line is a deliberate change, not part of a
+       version bump. Measured here: with the Table 9 types in place, `strict`
+       reports no errors, so turning it on is its own small follow-up. */
+    "strict": false,
+    "noUncheckedSideEffectImports": false,
+
     /* Linting */
     "noUnusedLocals": true,
     "noUnusedParameters": true,

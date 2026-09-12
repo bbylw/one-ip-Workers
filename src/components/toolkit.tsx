@@ -19,18 +19,15 @@ import {
 import { UnderlineHover } from "@/components/underline-hover";
 import { t } from "@/i18n";
 import { maskedIp } from "@/lib/network";
+import { features, type Column } from "@/lib/table";
 import { hideIpAtom } from "@/store/privacy";
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  type ColumnDef,
-} from "@tanstack/react-table";
+import { flexRender, useTable, type RowData } from "@tanstack/react-table";
 import { gsap } from "gsap";
 import { useAtom, useAtomValue } from "jotai";
 
 export function PageHeading({
   title,
+  description,
   privacy = false,
 }: {
   title: string;
@@ -41,14 +38,17 @@ export function PageHeading({
     document.title = `${title}`;
   }, [title]);
   return (
-    <>
-      <h1 className="sr-only">{title}</h1>
+    <header className="console-bar page-heading">
+      <div className="page-heading-text">
+        <h1 className="console-heading">{title}</h1>
+        {description ? <p>{description}</p> : null}
+      </div>
       {privacy && (
         <div className="page-privacy">
           <PrivacyToggle />
         </div>
       )}
-    </>
+    </header>
   );
 }
 export function PrivacyToggle() {
@@ -175,7 +175,7 @@ export function ActionButton({
     </Button>
   );
 }
-export function DataTable<T>({
+export function DataTable<TData extends RowData>({
   data,
   columns,
   empty = t("暂无数据"),
@@ -186,22 +186,17 @@ export function DataTable<T>({
   animateSorting = false,
   animateEntries = false,
 }: {
-  data: T[];
-  columns: ColumnDef<T>[];
+  data: TData[];
+  columns: Column<TData>[];
   empty?: ReactNode;
   className?: string;
-  getRowId?: (row: T) => string;
-  getRowClassName?: (row: T) => string;
+  getRowId?: (row: TData) => string;
+  getRowClassName?: (row: TData) => string;
   animateChanges?: boolean;
   animateSorting?: boolean;
   animateEntries?: boolean;
 }) {
-  const table = useReactTable({
-    data,
-    columns,
-    getRowId,
-    getCoreRowModel: getCoreRowModel(),
-  });
+  const table = useTable({ features, data, columns, getRowId });
   const bodyRef = useRef<HTMLTableSectionElement>(null);
   const positions = useRef(new Map<string, number>());
   const order = table

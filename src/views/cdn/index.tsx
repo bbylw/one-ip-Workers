@@ -10,8 +10,8 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { t } from "@/i18n";
 import { request } from "@/lib/network";
+import { type Column } from "@/lib/table";
 import { useQueries } from "@tanstack/react-query";
-import type { ColumnDef } from "@tanstack/react-table";
 import { providers, providerWebsite } from "./providers";
 
 type Row = {
@@ -21,7 +21,7 @@ type Row = {
   loading: boolean;
   error?: string;
 };
-const columns: ColumnDef<Row>[] = [
+const columns: Column<Row>[] = [
   {
     accessorKey: "name",
     header: t("厂商"),

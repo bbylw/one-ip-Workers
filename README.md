@@ -5,7 +5,7 @@
 <p align="left">
   <img src="https://img.shields.io/badge/React-19-282C34?logo=react&amp;logoColor=61DAFB" alt="React 19" />
   <img src="https://img.shields.io/badge/Vite-8-646CFF?logo=vite&amp;logoColor=white" alt="Vite 8" />
-  <img src="https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&amp;logoColor=white" alt="TypeScript 6" />
+  <img src="https://img.shields.io/badge/TypeScript-7-3178C6?logo=typescript&amp;logoColor=white" alt="TypeScript 7" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&amp;logoColor=white" alt="Tailwind CSS" />
   <img src="https://img.shields.io/badge/shadcn%2Fui-000000?logo=shadcnui&amp;logoColor=white" alt="shadcn/ui" />
   <img src="https://img.shields.io/badge/Lucide-F56565?logo=lucide&amp;logoColor=white" alt="Lucide" />
@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/TanStack_Query-FF4154?logo=reactquery&amp;logoColor=white" alt="TanStack Query" />
   <img src="https://img.shields.io/badge/Cloudflare_Workers-F38020?logo=cloudflareworkers&amp;logoColor=white" alt="Cloudflare Workers" />
   <img src="https://img.shields.io/badge/Leaflet-199900?logo=leaflet&amp;logoColor=white" alt="Leaflet" />
-  <img src="https://img.shields.io/badge/pnpm-10-F69220?logo=pnpm&amp;logoColor=white" alt="pnpm 10" />
+  <img src="https://img.shields.io/badge/pnpm-12-F69220?logo=pnpm&amp;logoColor=white" alt="pnpm 12" />
   <img src="https://img.shields.io/badge/Prettier-F7B93E?logo=prettier&amp;logoColor=black" alt="Prettier" />
 </p>
 
@@ -34,10 +34,10 @@ IP 查询、网络诊断、浏览器检测与 AI 服务状态工具箱。
 1. [Fork 本项目](https://github.com/zhihui-hu/one-ip/fork)到你的 GitHub 账号。
 2. 登录 [Cloudflare 控制台](https://dash.cloudflare.com/)，进入 **Workers & Pages**，创建 Worker，选择导入 Git 仓库。
 3. 连接 GitHub，选择你的 `one-ip` Fork，生产分支填 `main`。
-4. 构建命令填 `pnpm build`，部署命令填 `pnpm deploy`。使用 Node.js 24 和 pnpm 10.32.1，根目录保持默认。
+4. 构建命令填 `pnpm build`，部署命令填 `pnpm deploy`。使用 Node.js 24 和 pnpm 12.4.1（与 `package.json` 的 `packageManager` 一致），根目录保持默认。
 5. 点击部署，完成后打开 `workers.dev` 地址。自定义域名在 Worker 设置中绑定。
 
-项目使用 **Cloudflare Workers + Static Assets**，`/api/*` 接口需要 Worker。基础功能无需应用环境变量或 API Key。Turnstile 和 reCAPTCHA 的配置见“验证体验”。
+项目部署为**单个 Cloudflare Worker**，不配置 Static Assets：`pnpm build` 会把 `dist/` 中的前端产物嵌入 Worker，一次 `pnpm deploy` 同时发布页面与 `/api/*` 接口。基础功能无需应用环境变量或 API Key。Turnstile 和 reCAPTCHA 的配置见“验证体验”。
 
 Workers Builds 会在 `main` 收到提交时构建和部署。上方按钮使用原项目地址；需要保留 Fork 关系和更新工作流时，请按教程导入你的 Fork。
 
@@ -145,7 +145,9 @@ pnpm exec wrangler login
 pnpm deploy
 ```
 
-`pnpm deploy` 使用 `dist` 中的构建产物，运行前需要执行 `pnpm build`。`make deploy` 包含版本更新、构建和部署，无需密钥文件。
+`pnpm build` 的最后一步由 `scripts/build-worker-assets.mjs` 把 `dist/` 嵌入 `public/worker/assets.generated.js`（已在 Git 忽略列表，不入库），`pnpm deploy` 发布的就是这份 Worker 脚本，因此运行前必须执行 `pnpm build`。`make deploy` 包含版本更新、构建和部署，无需密钥文件。
+
+esbuild 与 workerd 需要运行安装脚本，授权写在 `pnpm-workspace.yaml` 的 `allowBuilds`。pnpm 12 不再读取旧的 `onlyBuiltDependencies`，写错时本地安装只是警告并正常结束，CI 会以 `ERR_PNPM_IGNORED_BUILDS` 失败。
 
 ## 验证体验（可选）
 
@@ -172,7 +174,8 @@ reCAPTCHA 使用 v3 评分型密钥。服务端校验 hostname、`browser_check`
 ## 项目结构与数据来源
 
 - `src/app.css`：界面样式；`src/components/ui`：shadcn/ui 组件。
-- `src/views`：网络、浏览器、AI 与状态页面；`public/worker`：Worker API。
+- `src/views`：网络、浏览器、AI 与状态页面；`public/worker`：Worker API 与前端资源路由。
+- `public/worker/static-assets.js`：Worker 直接响应前端请求，负责 SPA 回退、缓存与安全响应头；`scripts/build-worker-assets.mjs`：构建时把 `dist/` 嵌入 Worker。
 - Net.Coffee：IP 详情，展示字段取决于接口返回。
 - Globalping：全球测量；IANA / RDAP：注册资料；各平台官方状态源：运行状态。
 - FingerprintJS 与 CreepJS：浏览器检测，模块说明见 [vendor/browser-diagnostics](vendor/browser-diagnostics/README.md)。

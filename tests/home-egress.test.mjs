@@ -1,12 +1,9 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import ts from "typescript";
 import * as jsx from "react/jsx-runtime";
+import { commonjs } from "./transpile.mjs";
 
-const { outputText } = ts.transpileModule(readFileSync("src/views/home/index.tsx", "utf8"), {
-  compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX },
-});
 function render(primary, split, client = {}, capture = () => {}) {
   const batches = [[], primary];
   const require = (name) => {
@@ -23,8 +20,11 @@ function render(primary, split, client = {}, capture = () => {}) {
     };
     return new Proxy({}, { get: (_, key) => key });
   };
-  const exports = {};
-  new Function("require", "exports", outputText)(require, exports);
+  const exports = commonjs(
+    readFileSync("src/views/home/index.tsx", "utf8"),
+    require,
+    { tsx: true },
+  );
   const tree = exports.HomePage();
   capture(tree);
   return JSON.stringify(tree);

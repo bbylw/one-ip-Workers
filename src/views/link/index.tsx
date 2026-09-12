@@ -7,8 +7,8 @@ import { SiteLogo } from "@/components/site-logo";
 import { ActionButton, DataTable } from "@/components/toolkit";
 import { Card, CardContent } from "@/components/ui/card";
 import { t } from "@/i18n";
+import { type Column } from "@/lib/table";
 import { skipToken, useQueries, useQueryClient } from "@tanstack/react-query";
-import type { ColumnDef } from "@tanstack/react-table";
 import { useAtom } from "jotai";
 import { testConnectivity, type ProbeResult } from "./api";
 import { connectivityRoundAtom } from "./store";
@@ -56,7 +56,7 @@ function ObservedSite({ row }: { row: ConnectivityRow }) {
   );
 }
 
-const columns: ColumnDef<ConnectivityRow>[] = [
+const columns: Column<ConnectivityRow>[] = [
   {
     accessorKey: "name",
     header: t("网站"),
@@ -224,7 +224,9 @@ export default function LinkPage() {
   if (exits) return <Navigate replace to="/network/exits" />;
   return (
     <>
-      <h1 className="sr-only">{t("网络连通性测试")}</h1>
+      <header className="console-bar page-heading">
+        <h1 className="console-heading">{t("网络连通性测试")}</h1>
+      </header>
       <div className="legend mb-2 text-xs">
         <i className="dot-good" />
         {t("优")}

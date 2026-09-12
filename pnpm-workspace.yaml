@@ -1,0 +1,44 @@
+# pnpm 12 reads build-script approvals from `allowBuilds` in this file. The old
+# `onlyBuiltDependencies` lists (in package.json or here) are ignored: a wrong
+# setting still passes locally with a warning, then fails CI with
+# ERR_PNPM_IGNORED_BUILDS. Reproduce with a clean install before changing it.
+allowBuilds:
+  # esbuild resolves its native binary in an install script; Vite uses it for
+  # dependency pre-bundling.
+  esbuild: true
+  # workerd is the local Workers runtime behind `pnpm worker:dev`, and
+  # `pnpm test` runs `wrangler deploy --dry-run` against it.
+  workerd: true
+# Written by pnpm, not by hand: pnpm 12 withholds releases younger than its
+# minimum release age, and cn, rollup and react-hook-form had all been published
+# inside that window when this upgrade was taken. The block can be deleted once
+# those releases are old enough; the lockfile keeps the same versions either way.
+minimumReleaseAgeExclude:
+  - "@rollup/rollup-android-arm-eabi@4.63.2"
+  - "@rollup/rollup-android-arm64@4.63.2"
+  - "@rollup/rollup-darwin-arm64@4.63.2"
+  - "@rollup/rollup-darwin-x64@4.63.2"
+  - "@rollup/rollup-freebsd-arm64@4.63.2"
+  - "@rollup/rollup-freebsd-x64@4.63.2"
+  - "@rollup/rollup-linux-arm-gnueabihf@4.63.2"
+  - "@rollup/rollup-linux-arm-musleabihf@4.63.2"
+  - "@rollup/rollup-linux-arm64-gnu@4.63.2"
+  - "@rollup/rollup-linux-arm64-musl@4.63.2"
+  - "@rollup/rollup-linux-loong64-gnu@4.63.2"
+  - "@rollup/rollup-linux-loong64-musl@4.63.2"
+  - "@rollup/rollup-linux-ppc64-gnu@4.63.2"
+  - "@rollup/rollup-linux-ppc64-musl@4.63.2"
+  - "@rollup/rollup-linux-riscv64-gnu@4.63.2"
+  - "@rollup/rollup-linux-riscv64-musl@4.63.2"
+  - "@rollup/rollup-linux-s390x-gnu@4.63.2"
+  - "@rollup/rollup-linux-x64-gnu@4.63.2"
+  - "@rollup/rollup-linux-x64-musl@4.63.2"
+  - "@rollup/rollup-openbsd-x64@4.63.2"
+  - "@rollup/rollup-openharmony-arm64@4.63.2"
+  - "@rollup/rollup-win32-arm64-msvc@4.63.2"
+  - "@rollup/rollup-win32-ia32-msvc@4.63.2"
+  - "@rollup/rollup-win32-x64-gnu@4.63.2"
+  - "@rollup/rollup-win32-x64-msvc@4.63.2"
+  - cn@0.3.0
+  - react-hook-form@7.88.0
+  - rollup@4.63.2

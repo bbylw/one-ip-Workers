@@ -1,11 +1,15 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import ts from "typescript";
 import { t } from "../src/i18n/index.ts";
+import { esmBody } from "./transpile.mjs";
 
-const source = ts.transpileModule(readFileSync("src/views/ping/api.ts", "utf8").replace('import { t } from "@/i18n";', '').replace('import { endpoint } from "@/lib/network";', ''), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } }).outputText;
-const createRunner = new Function("t", "endpoint", "setTimeout", source.replaceAll("export ", "") + "\nreturn runPing;").bind(null, t);
+const source = esmBody(
+  readFileSync("src/views/ping/api.ts", "utf8")
+    .replace('import { t } from "@/i18n";', "")
+    .replace('import { endpoint } from "@/lib/network";', ""),
+);
+const createRunner = new Function("t", "endpoint", "setTimeout", source + "\nreturn runPing;").bind(null, t);
 
 test("Ping publishes intermediate results before completion", async () => {
   const partial = { status: "in-progress", results: [{ result: { status: "finished", stats: { avg: 12 } } }] };

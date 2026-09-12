@@ -11,12 +11,12 @@ import {
 } from "@/components/toolkit";
 import { Card, CardContent } from "@/components/ui/card";
 import { t } from "@/i18n";
+import { type Column } from "@/lib/table";
 import { skipToken, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ColumnDef } from "@tanstack/react-table";
 import { detectDnsExits, dnsSampleCount, type DnsProgress } from "./api";
 
 type Resolver = DnsProgress["results"][number];
-const columns: ColumnDef<Resolver>[] = [
+const columns: Column<Resolver>[] = [
   {
     id: "ip",
     header: t("DNS 出口 IP"),

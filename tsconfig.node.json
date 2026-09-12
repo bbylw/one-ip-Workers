@@ -13,6 +13,10 @@
     "moduleDetection": "force",
     "noEmit": true,
 
+    /* Same TypeScript 6 pins as tsconfig.app.json. */
+    "strict": false,
+    "noUncheckedSideEffectImports": false,
+
     /* Linting */
     "noUnusedLocals": true,
     "noUnusedParameters": true,

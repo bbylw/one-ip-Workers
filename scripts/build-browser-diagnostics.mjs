@@ -3,8 +3,19 @@ import { createHash } from "node:crypto";
 import { readFile, writeFile, copyFile, stat } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { rollup } from "rollup";
-import ts from "typescript";
+import { transformSync } from "esbuild";
 
+// TypeScript 7 is the native compiler and exports no stable JavaScript API, so
+// this transform step uses esbuild instead. `const enum` is the one construct
+// where the two could disagree in single-file mode; both keep it as a runtime
+// object, which is what these vendor sources need.
+//
+// The committed public/browser-diagnostics.js was still produced by the
+// TypeScript 6 emit, so the first run of this script rewrites most of that file
+// (quote style, indentation, dropped comments, `/* @__PURE__ */` markers). That
+// makes the rebuild its own change to review rather than part of a dependency
+// bump: tests/deep-diagnostics.test.mjs pins the bundle hash, and the bundle
+// feeds the browser fingerprint results.
 const bundle = await rollup({
   input: "vendor/browser-diagnostics/entry.ts",
   plugins: [
@@ -28,12 +39,11 @@ const bundle = await rollup({
         if (!id.endsWith(".ts")) return null;
         if (id === resolve("vendor/browser-diagnostics/upstream/navigator/index.ts")) code = adaptNavigator(code);
         return {
-          code: ts.transpileModule(code, {
-            compilerOptions: {
-              target: ts.ScriptTarget.ES2020,
-              module: ts.ModuleKind.ESNext,
-            },
-          }).outputText,
+          code: transformSync(code, {
+            loader: "ts",
+            format: "esm",
+            target: "es2020",
+          }).code,
           map: null,
         };
       },
