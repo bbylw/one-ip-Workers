@@ -19,6 +19,12 @@ worker-configuration.d.ts
 # SPA files embedded into the Worker bundle by scripts/build-worker-assets.mjs
 public/worker/assets.generated.js
 
+# Layout/colour review screenshots written by scripts/verify-ui.mjs. Regenerate
+# with that script instead of committing: the captures expose the location, ASN
+# and browser fingerprint of the machine that ran them, even though the IP
+# octets are masked. README images stay hand-redacted under docs/screenshots.
+docs/screenshots/ui-review/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
