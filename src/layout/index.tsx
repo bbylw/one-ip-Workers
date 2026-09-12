@@ -119,6 +119,13 @@ export function AppLayout() {
               >
                 <img src="/icon.svg" alt="" width="32" height="32" />
               </Link>
+              <span
+                className="console-station"
+                translate="no"
+                aria-hidden="true"
+              >
+                ONE-IP
+              </span>
               <ScrollArea className="nav-tabs-scroll">
                 {list}
                 <ScrollBar orientation="horizontal" />

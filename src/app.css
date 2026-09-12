@@ -3702,3 +3702,167 @@ body::before {
   border-left-color: #d97757;
   background: color-mix(in srgb, #d97757 10%, transparent);
 }
+
+/* ═══ Console evolution: ONE-IP instrument identity ═══════════════════════
+   Design read: technical diagnostics console, precision-instrument language,
+   shadcn/ui + Tailwind v4 + Geist/Geist Mono, one blue accent.
+   Dials: VARIANCE 4 (restrained offset) / MOTION 3 (static + CSS only) /
+   DENSITY 6 (dense ledger, still breathing).
+   Deliberately additive at EOF: every view keeps its structure so upstream
+   merges still apply; the identity lives in the shell, not in each page.
+   Shape rule: panels stay square (radius 0), buttons keep rounded-lg. */
+
+/* Station strip: the nav reads as a rack unit, not a floating pill. */
+.app-nav {
+  position: relative;
+  border: 1px solid var(--border);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklch, var(--foreground) 6%, transparent),
+    var(--tool-shadow);
+}
+.console-station {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--subtle);
+  padding-left: 4px;
+  white-space: nowrap;
+}
+.console-station::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 8px;
+  background: var(--good);
+  vertical-align: 1px;
+}
+/* Numbered tabs: 01–05 from a counter, no per-route markup needed. */
+.app-nav [data-slot="animated-segmented-tabs-list"] {
+  counter-reset: nav-index;
+}
+.app-nav [data-slot="animated-segmented-tabs-trigger"]::before {
+  content: counter(nav-index, decimal-leading-zero);
+  counter-increment: nav-index;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--subtle);
+}
+.app-nav
+  [data-slot="animated-segmented-tabs-trigger"][data-state="active"]::before {
+  color: var(--primary);
+}
+@media (max-width: 760px) {
+  .console-station,
+  .app-nav [data-slot="animated-segmented-tabs-trigger"]::before {
+    display: none;
+  }
+}
+
+/* Page header: double rule below, mono path kicker above the title. */
+.console-bar {
+  border-bottom: 3px double var(--border);
+  padding-bottom: 14px;
+}
+.page-heading .console-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--subtle);
+}
+.page-heading .console-kicker::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  background: var(--primary);
+}
+.page-heading .console-kicker span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Primary readout: a tick scale under the address, like a caliper jaw. */
+.console-address {
+  position: relative;
+  padding-bottom: 12px;
+}
+.console-address::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 128px;
+  height: 5px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--border) 0 1px,
+    transparent 1px 8px
+  );
+}
+
+/* Panel titles: square section marker instead of a plain label. */
+.tool-card [data-slot="card-title"]::before,
+.home-page > [data-slot="card"] [data-slot="card-title"]::before,
+.home-overview > [data-slot="card"] [data-slot="card-title"]::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 8px;
+  background: var(--primary);
+  vertical-align: 1px;
+}
+
+/* Ledger rows: labels become mono micro-caps, values keep the weight. */
+.facts dt {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Footer: ledger line on top, mono micro below. */
+.app-footer {
+  border-top: 3px double var(--border);
+  margin-top: 8px;
+  padding-top: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
+/* Vignette: quiet depth over the graph paper, fixed and non-interactive. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 90% at 50% 0%,
+    transparent 62%,
+    rgb(0 0 0 / 5%) 100%
+  );
+}
+.dark body::after {
+  background: radial-gradient(
+    120% 90% at 50% 0%,
+    transparent 60%,
+    rgb(0 0 0 / 26%) 100%
+  );
+}
+@media (prefers-reduced-transparency: reduce) {
+  body::after {
+    display: none;
+  }
+}

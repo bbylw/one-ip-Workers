@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { AnimatedValue } from "@/components/animated-value";
 import { CompactText } from "@/components/compact-text";
 import { NumberTicker } from "@/components/number-ticker";
@@ -37,9 +37,13 @@ export function PageHeading({
   useEffect(() => {
     document.title = `${title}`;
   }, [title]);
+  const { pathname } = useLocation();
   return (
     <header className="console-bar page-heading">
       <div className="page-heading-text">
+        <p className="console-kicker" aria-hidden="true">
+          <span translate="no">{pathname}</span>
+        </p>
         <h1 className="console-heading">{title}</h1>
         {description ? <p>{description}</p> : null}
       </div>
