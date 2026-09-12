@@ -36,7 +36,7 @@ Cloudflare 官方在"减小 Worker 体积"的建议里点名了这种做法，�
 
 ## 与上游的已知偏离
 
-`--env` 标志。上游在 `59b53bb` 新增 `[env.local]` 之后，`wrangler deploy --env=''` 会被判为"找不到名为 '' 的环境"而直接失败，因为 wrangler 一旦看到任何 `[env.*]` 段就会校验环境名。受影响的是三处：`package.json` 的 `test` 脚本、`make/deploy.mk`、以及 CI 的部署命令。本仓库把这三处的 `--env=''` 去掉，因为不带 `--env` 本来就是顶层（生产）配置。这是上游自身的缺陷，值得回报一个 Issue 或直接提 PR。
+`--env` 标志。`test` 脚本、`make/deploy.mk` 与 CI 部署命令原本都带 `--env=''` 表示"用顶层配置"。上游新增 `[env.local]` 之后 wrangler 会校验环境名，于是在 **Windows 上本地 `pnpm test` 会失败**：`pnpm run` 经 cmd.exe 执行，而 cmd.exe 不剥离单引号，实际传出的环境名是两个单引号字符，报错为 `No environment found in configuration with name "''"`。实测同一命令把参数换成真正的空字符串就正常，所以 Linux 与 macOS 的 shell 剥掉引号后不受影响，上游 CI 一直是绿的，这个坑只咬 Windows 开发者。本仓库直接去掉该标志：不带 `--env` 本来就是顶层（生产）配置，三个平台语义一致。
 
 缺失资源的状态码。自研那版资源服务会区分"应用路由"与"文件请求"：`/network/ip/1.1.1.1` 回 SPA 壳，而 `/assets/missing.js` 回 404，避免脚本或字体 404 时浏览器拿到 HTML 并报出难懂的语法错误。Static Assets 的 `not_found_handling = "single-page-application"` 对任何未匹配路径一律回 SPA 壳加 200，包括带扩展名的缺失文件。这是平台语义，本仓库接受，不再自行兜一层。
 
