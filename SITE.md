@@ -30,7 +30,7 @@ Cloudflare 官方在"减小 Worker 体积"的建议里点名了这种做法，�
 
 维护面上，那 134 行运行时服务是在重造平台已经保证的能力（SPA 回退、ETag 与条件请求、content-type、缓存策略、安全头），并且需要自己跟进边界；交给 Static Assets 后这些是平台行为。
 
-而"去掉 `[assets]`"并没有换来新的部署能力：上游形态本来就是 Workers 部署，`pnpm deploy` 一条命令同时发布脚本与资源。
+而"去掉 `[assets]`"并没有换来新的部署能力：上游形态本来就是 Workers 部署，`pnpm run deploy` 一条命令同时发布脚本与资源。
 
 将来若出现必须自托管资源的具体约束（部署通道不支持资源上传、需要把站点挂在已有 Worker 的路由前缀下、账号拿不到 Static Assets、或要在资源响应前插入鉴权与改写），再重新评估嵌入方案，并把约束写回本节。
 
@@ -67,9 +67,9 @@ git push
 
 ## 部署
 
-前提：先 `pnpm build` 产出 `dist`，`pnpm deploy` 会同时上传 Worker 脚本与 Static Assets 目录。基础功能不需要任何应用环境变量或 API Key。
+前提：先 `pnpm build` 产出 `dist`，`pnpm run deploy` 会同时上传 Worker 脚本与 Static Assets 目录。基础功能不需要任何应用环境变量或 API Key。
 
-方式一，Workers Builds（推荐，跟随提交自动发布）。在 Cloudflare 控制台 Workers & Pages 导入本仓库，生产分支 `main`，构建命令 `pnpm build`，部署命令 `pnpm deploy`，Node.js 24、pnpm 12.4.1，根目录保持默认。
+方式一，Workers Builds（推荐，跟随提交自动发布）。在 Cloudflare 控制台 Workers & Pages 导入本仓库，生产分支 `main`，构建命令 `pnpm build`，部署命令 `pnpm run deploy`（不要写成 `pnpm deploy`：pnpm 12 把 `deploy` 当作内置命令，会报 `ERR_PNPM_INVALID_DEPLOY_TARGET`），Node.js 24、pnpm 12.4.1，根目录保持默认。
 
 方式二，GitHub Actions。在仓库 Settings 的 Secrets and variables 中添加 secret `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` 与 variable `ENABLE_CF_DEPLOY=true`。构建与测试始终执行，只有开启该变量才进入部署作业；部署作业下载构建作业产出的 `dist` 后执行 `wrangler deploy`。
 

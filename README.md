@@ -36,7 +36,7 @@ IP 查询、网络诊断、浏览器检测与 AI 服务状态工具箱。
 1. [Fork 本仓库](https://github.com/bbylw/one-ip-Workers/fork)到你的 GitHub 账号。
 2. 登录 [Cloudflare 控制台](https://dash.cloudflare.com/)，进入 **Workers & Pages**，创建 Worker，选择导入 Git 仓库。
 3. 连接 GitHub，选择你的 `one-ip` Fork，生产分支填 `main`。
-4. 构建命令填 `pnpm build`，部署命令填 `pnpm deploy`。使用 Node.js 24 和 pnpm 12.4.1（与 `package.json` 的 `packageManager` 一致），根目录保持默认。
+4. 构建命令填 `pnpm build`，部署命令填 `pnpm run deploy`。使用 Node.js 24 和 pnpm 12.4.1（与 `package.json` 的 `packageManager` 一致），根目录保持默认。
 5. 点击部署，完成后打开 `workers.dev` 地址。自定义域名在 Worker 设置中绑定。
 
 项目使用 **Cloudflare Workers + Static Assets**，`/api/*` 接口需要 Worker。基础功能无需应用环境变量或 API Key。Turnstile 和 reCAPTCHA 的配置见“验证体验”。
@@ -144,10 +144,10 @@ pnpm lint
 
 # 登录 Cloudflare 并部署
 pnpm exec wrangler login
-pnpm deploy
+pnpm run deploy
 ```
 
-`pnpm deploy` 使用 `dist` 中的构建产物，运行前需要执行 `pnpm build`。`make deploy` 包含版本更新、构建和部署，无需密钥文件。
+`pnpm run deploy` 使用 `dist` 中的构建产物，运行前需要执行 `pnpm build`。注意不要写成 `pnpm deploy`：pnpm 12 把 `deploy` 当作内置命令，会报 `ERR_PNPM_INVALID_DEPLOY_TARGET`。`make deploy` 包含版本更新、构建和部署，无需密钥文件。
 
 esbuild 与 workerd 需要运行安装脚本，授权写在 `pnpm-workspace.yaml` 的 `allowBuilds`。pnpm 12 不再读取旧的 `onlyBuiltDependencies`，写错时本地安装只是警告并正常结束，CI 会以 `ERR_PNPM_IGNORED_BUILDS` 失败。
 

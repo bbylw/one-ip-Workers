@@ -52,7 +52,7 @@ Returns `ip`, `source`, `checked_at`, `score`, `status`, location, ISP, ASN and 
 1. [Fork this repository](https://github.com/bbylw/one-ip-Workers/fork) into your GitHub account.
 2. Open the [Cloudflare dashboard](https://dash.cloudflare.com/), go to **Workers & Pages**, create a Worker and choose to import a Git repository.
 3. Connect GitHub, select your `one-ip` fork and set the production branch to `main`.
-4. Set the build command to `pnpm build` and the deploy command to `pnpm deploy`. Use Node.js 24 and pnpm 12.4.1 (the version pinned by `packageManager` in `package.json`). Keep the default root directory.
+4. Set the build command to `pnpm build` and the deploy command to `pnpm run deploy`. Use Node.js 24 and pnpm 12.4.1 (the version pinned by `packageManager` in `package.json`). Keep the default root directory.
 5. Deploy and open the assigned `workers.dev` address. Use the Worker settings to connect a custom domain.
 
 The project uses **Cloudflare Workers with Static Assets**. The `/api/*` routes need a Worker. Core features require no application environment variables or API keys. See “Verification” for Turnstile and reCAPTCHA setup.
@@ -138,10 +138,10 @@ pnpm lint
 
 # Log in to Cloudflare and deploy
 pnpm exec wrangler login
-pnpm deploy
+pnpm run deploy
 ```
 
-`pnpm deploy` uses the build output in `dist`; run `pnpm build` before deployment. `make deploy` updates the version, builds and deploys without a secrets file.
+`pnpm run deploy` uses the build output in `dist`; run `pnpm build` before deployment. Do not write `pnpm deploy`: pnpm 12 treats `deploy` as a built-in command and fails with `ERR_PNPM_INVALID_DEPLOY_TARGET`. `make deploy` updates the version, builds and deploys without a secrets file.
 
 esbuild and workerd run install scripts, approved by `allowBuilds` in `pnpm-workspace.yaml`. pnpm 12 no longer reads the older `onlyBuiltDependencies` key: a wrong entry only warns during a local install and still exits successfully, while CI fails with `ERR_PNPM_IGNORED_BUILDS`.
 
