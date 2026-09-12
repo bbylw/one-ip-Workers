@@ -47,6 +47,10 @@ export function LookupForm({
             className={grouped ? "lookup-input-group h-9" : "lookup-form"}
           >
             <Control
+              name="query"
+              type="search"
+              autoComplete="off"
+              inputMode="search"
               aria-label={placeholder}
               placeholder={placeholder}
               aria-invalid={!!form.formState.errors.query}

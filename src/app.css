@@ -3360,6 +3360,7 @@ body::before {
   font-weight: 600;
   line-height: 1.2;
   letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 .console-grid {
   display: grid;
