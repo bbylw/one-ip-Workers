@@ -60,8 +60,9 @@ export function NumberTicker({
       current.current.value = displayed;
     };
   }, [value, formatValue, duration, snap]);
+  // data-numeric opts the value into the monospace tabular treatment.
   return (
-    <span ref={nodeRef} className={className}>
+    <span ref={nodeRef} data-numeric className={className}>
       {formatValue(Number.isFinite(value) ? value : 0)}
     </span>
   );

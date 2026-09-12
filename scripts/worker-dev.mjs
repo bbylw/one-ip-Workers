@@ -1,7 +1,10 @@
 import { spawn } from "node:child_process";
 
+// Windows resolves pnpm through the pnpm.cmd shim, which needs a shell.
+const shell = process.platform === "win32";
+
 const children = [
-  spawn("pnpm", ["dev"], { stdio: "inherit" }),
+  spawn("pnpm", ["dev"], { stdio: "inherit", shell }),
   spawn(
     "pnpm",
     [
@@ -10,14 +13,12 @@ const children = [
       "dev",
       "--var",
       "LOCAL_DEV:true",
-      "--assets",
-      "./public",
       "--ip",
       "127.0.0.1",
       "--port",
       "8787",
     ],
-    { stdio: "inherit" },
+    { stdio: "inherit", shell },
   ),
 ];
 let stopping = false;

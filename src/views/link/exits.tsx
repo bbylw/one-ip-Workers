@@ -8,7 +8,9 @@ export default function ExitsPage() {
   }, []);
   return (
     <>
-      <h1 className="sr-only">{t("分流出口")}</h1>
+      <header className="console-bar page-heading">
+        <h1 className="console-heading">{t("分流出口")}</h1>
+      </header>
       <SplitResults />
     </>
   );

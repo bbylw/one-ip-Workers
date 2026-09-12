@@ -103,8 +103,8 @@ export function AppLayout() {
           activationMode="manual"
           className="min-w-0"
           listClassName="h-9 w-max justify-start gap-0.5 bg-transparent p-0"
-          highlightClassName="rounded-lg bg-primary/10 shadow-none ring-0"
-          triggerClassName="h-9 flex-none rounded-lg border-0 px-2 text-[13px] text-muted-foreground hover:bg-accent/50 data-[state=active]:font-semibold data-[state=active]:text-primary"
+          highlightClassName="rounded-none bg-transparent shadow-none ring-0"
+          triggerClassName="h-9 flex-none border-0 px-2 pb-1 text-[13px] text-muted-foreground hover:text-foreground data-[state=active]:font-semibold data-[state=active]:text-foreground"
           renderList={(list) => (
             <nav ref={navRef} className="app-nav" aria-label={t("主导航")}>
               {mobile && (

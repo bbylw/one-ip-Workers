@@ -11,46 +11,92 @@
   --sidebar-ring: var(--primary);
 }
 
-/* Reference geometry: 1000px shell, system typography, compact tools. */
+/* Reference geometry: 1000px shell, Geist typography, compact instruments.
+
+   Palette: one cool neutral scale plus the brand accent. Every signal exists
+   twice: `--good/--warning/--danger` are fills (bars, badges, gauges) and
+   `--data-good/--data-warn/--data-bad` are the text-safe inks. The fills are
+   too bright to read as text, so measured values use the ink tokens.
+
+   Grays are mixed from hue 258 with a fixed chroma instead of borrowed from
+   another product's palette. Values are hex, not oklch: gsap.utils.splitColor
+   parses them at runtime. */
 :root {
-  --background: #fafafa;
-  --foreground: #1a1a1a;
-  --card: #fff;
-  --card-foreground: #1a1a1a;
-  --muted: #f8f9fb;
-  --muted-foreground: #57606a;
-  --border: #e1e4e8;
-  --input: #d8dce0;
-  --accent: #eef1f5;
-  --secondary: #eef1f5;
-  --subtle: #8b949e;
+  --background: #f6f7f9;
+  --foreground: #1b1f26;
+  --card: #fdfdfe;
+  --card-foreground: #1b1f26;
+  --muted: #f0f2f5;
+  --muted-foreground: #545c69;
+  --border: #dee1e6;
+  /* Rule between rows inside a group. Measured against the two grounds:
+     1.20:1 on #f6f7f9, 1.32:1 on #14171c, i.e. legible in both themes yet a
+     step quieter than the `--border` rules that separate whole sections. */
+  --rule-row: color-mix(in oklch, var(--border) 85%, transparent);
+  --input: #cbd0d8;
+  --accent: #e9ecf1;
+  --secondary: #e9ecf1;
+  --subtle: #6b7280;
   --success: #1b8a2d;
-  --success-soft: #d1fae5;
-  --success-text: #065f46;
-  --good: #6fcf7c;
-  --warning: #f0c040;
-  --danger: #cf222e;
-  --info-soft: #dbeafe;
+  --success-soft: #d7f5e3;
+  --success-text: #0a5c3a;
+  --good: #3f9e57;
+  --warning: #b8860b;
+  --danger: #c3352b;
+  --info-soft: #dbe6fb;
   --info-text: #1d4ed8;
-  --tool-shadow: 0 1px 4px rgb(0 0 0 / 6%), 0 4px 12px rgb(0 0 0 / 4%);
+  --data-good: #14724a;
+  --data-good-soft: #357a4d;
+  --data-warn: #8a5a08;
+  --data-bad: #b3271e;
+  --lat-fast: #14724a;
+  --lat-mid: #8a5a08;
+  --lat-slow: #b3271e;
+  --backdrop-line: rgb(27 31 38 / 6.5%);
+  --backdrop-line-strong: rgb(27 31 38 / 10%);
+  --chart-1: #2f74c8;
+  --chart-2: #2b8fa6;
+  --chart-3: #2f8f5b;
+  --chart-4: #b8860b;
+  --chart-5: #b3452f;
+  --tool-shadow: 0 1px 2px rgb(27 31 38 / 5%), 0 8px 24px rgb(27 31 38 / 5%);
 }
 .dark {
-  --background: #0d1117;
-  --foreground: #e6edf3;
-  --card: #161b22;
-  --card-foreground: #e6edf3;
-  --muted: #161b22;
-  --muted-foreground: #c9d1d9;
-  --border: #30363d;
-  --input: #444c56;
-  --accent: #21262d;
-  --secondary: #21262d;
-  --subtle: #8b949e;
-  --success-soft: #123e31;
-  --success-text: #a7f3d0;
-  --info-soft: #162d4e;
-  --info-text: #93c5fd;
-  --tool-shadow: 0 1px 4px rgb(0 0 0 / 40%), 0 4px 12px rgb(0 0 0 / 30%);
+  --background: #14171c;
+  --foreground: #e8eaee;
+  --card: #1a1e24;
+  --card-foreground: #e8eaee;
+  --muted: #1a1e24;
+  --muted-foreground: #a6adb9;
+  --border: #2b313a;
+  --rule-row: color-mix(in oklch, var(--border) 85%, transparent);
+  --input: #39404b;
+  --accent: #232830;
+  --secondary: #232830;
+  --subtle: #8d95a3;
+  --success: #4fbf76;
+  --success-soft: #12352a;
+  --success-text: #a7e8c4;
+  --good: #57c07d;
+  --warning: #d7a23c;
+  --danger: #e0665c;
+  --info-soft: #17293f;
+  --info-text: #9cc4fb;
+  --data-good: #5fd08a;
+  --data-good-soft: #8fd3a4;
+  --data-warn: #e0b45c;
+  --data-bad: #f07d72;
+  --lat-fast: #5fd08a;
+  --lat-mid: #e0b45c;
+  --lat-slow: #f07d72;
+  --backdrop-line: rgb(232 234 238 / 5%);
+  --backdrop-line-strong: rgb(232 234 238 / 8%);
+  --chart-1: #6aa4ea;
+  --chart-2: #5fb3c9;
+  --chart-3: #6ec48d;
+  --chart-4: #d7a23c;
+  --chart-5: #dd7d63;
+  --tool-shadow: 0 1px 2px rgb(0 0 0 / 45%), 0 12px 32px rgb(0 0 0 / 28%);
 }
 body {
   line-height: 1.6;
@@ -88,15 +134,6 @@ body {
 }
 .nav-short {
   display: none;
-}
-.page-heading {
-  margin-bottom: 16px;
-}
-.page-heading h1 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  line-height: 1.6;
-  margin: 0 0 8px;
 }
 .description-row {
   display: flex;
@@ -863,9 +900,6 @@ body {
   .nav-short {
     display: inline;
   }
-  .page-heading h1 {
-    font-size: 1.4rem;
-  }
   .description-row p,
   .section-heading p {
     font-size: 0.82rem;
@@ -1104,13 +1138,6 @@ body {
   border-radius: var(--radius-xl);
   padding: 14px;
 }
-.lookup-page .page-heading {
-  margin-bottom: 12px;
-}
-.lookup-page .page-heading h1 {
-  font-size: 1.25rem;
-  margin-bottom: 2px;
-}
 .lookup-page .description-row p {
   font-size: 0.8rem;
 }
@@ -1207,8 +1234,10 @@ body {
   gap: 12px;
   align-items: start;
 }
+/* These grids used to zero the row rules, so the same `Facts` list had
+   hairlines on one page and none on the next. Density stays page-specific;
+   the rule between rows is now the shared baseline. */
 .ip-result-grid .facts > div {
-  border: 0;
   padding: 5px 0;
   min-height: 30px;
 }
@@ -1240,7 +1269,6 @@ body {
   justify-content: flex-start;
   flex-wrap: wrap;
   gap: 4px 12px;
-  border: 0;
   min-height: 28px;
   padding: 4px 0;
 }
@@ -1314,9 +1342,6 @@ body {
   gap: 6px;
 }
 
-.service-status-page .page-heading h1 {
-  font-size: 1.25rem;
-}
 .service-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1789,7 +1814,6 @@ body {
   align-items: start;
 }
 .ai-diagnostics .facts > div {
-  border: 0;
   min-height: 30px;
   padding: 4px 0;
 }
@@ -2594,9 +2618,9 @@ body {
   font-size: 14px;
   font-weight: 600;
 }
+/* The dossier used to draw its own bottom rule; it now relies on the shared
+   top rule like every other Facts list. */
 .ip-dossier .facts > div {
-  border: 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 75%, transparent);
   min-height: 40px;
   padding: 8px 0;
   gap: 16px;
@@ -2663,9 +2687,6 @@ body {
   }
 }
 
-.ip-dossier .facts > div:last-child {
-  border-bottom: 0;
-}
 .ip-field-label {
   display: inline-flex;
   align-items: center;
@@ -3096,4 +3117,587 @@ body {
     font-size: 12px;
     overflow-wrap: anywhere;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Instrument layer
+
+   The readout language for measured values: monospaced numerals, hairline rows
+   instead of stacked cards, signal color that encodes state, and a faint graph
+   paper backdrop. Rules below intentionally win over the component styles
+   above; the token palette is at the top of this file.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Graph paper. Fixed and pointer-transparent so it never repaints on scroll
+   and never intercepts a click, and masked so it fades out below the fold. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--backdrop-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--backdrop-line) 1px, transparent 1px);
+  background-size: 32px 32px;
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    #000,
+    rgb(0 0 0 / 45%) 60%,
+    transparent
+  );
+  mask-image: linear-gradient(180deg, #000, rgb(0 0 0 / 45%) 60%, transparent);
+}
+@media (prefers-reduced-transparency: reduce) {
+  body::before {
+    display: none;
+  }
+}
+
+/* Measured values: monospaced and column-aligned. */
+[data-numeric],
+.ip-text,
+.ping-ms {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.ip-text {
+  letter-spacing: -0.01em;
+}
+
+/* ── Readout: label, monospace value, optional unit, state rail ─────────── */
+.readout {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.readout-label {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.readout-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(1.5rem, 3.2vw, 2.1rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--readout-ink, var(--foreground));
+}
+.readout-unit {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--subtle);
+}
+.readout-rail {
+  padding-left: 12px;
+  border-left: 2px solid var(--readout-ink, var(--border));
+}
+[data-state="good"] {
+  --readout-ink: var(--data-good);
+}
+[data-state="ok"] {
+  --readout-ink: var(--data-good-soft);
+}
+[data-state="warn"] {
+  --readout-ink: var(--data-warn);
+}
+[data-state="bad"] {
+  --readout-ink: var(--data-bad);
+}
+
+/* ── Hairline data rows: one rule above each following row ─────────────── */
+.data-rows {
+  display: grid;
+}
+.data-rows > * {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 12px;
+  padding: 7px 0;
+}
+.data-rows > * + * {
+  border-top: 1px solid var(--rule-row);
+}
+.data-rows > * > :last-child {
+  min-width: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Motion: only for values that just changed ──────────────────────────── */
+@keyframes readout-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .readout-value {
+    animation: readout-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .action-button:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+}
+
+/* ── Component upgrades ────────────────────────────────────────────────── */
+/* The primary card eyebrow and address are also targeted by later-scoped rules
+   further up, so they are repeated here to keep one tracking and one weight. */
+.eyebrow,
+.home-page .home-primary-card .eyebrow,
+.home-overview .eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.app-nav {
+  border: 1px solid var(--border);
+}
+.primary-ip-block .ip-value,
+.home-page .home-primary-card .ip-value {
+  font-weight: 500;
+}
+/* Reputation readout: label above the value, aligned to the state rail. The
+   monospace digits are wider than the proportional ones, so the value steps
+   down from 56px to stay inside the 96px the address row reserves for it. */
+.home-primary-card .ip-reputation-badge {
+  align-items: flex-start;
+}
+.home-primary-card .ip-reputation-badge > span {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.home-primary-card .ip-reputation-badge strong {
+  font-weight: 500;
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.facts dd {
+  font-variant-numeric: tabular-nums;
+}
+.latency-badge {
+  transition:
+    color 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--readout-ink, var(--muted-foreground));
+  background-color: color-mix(
+    in oklch,
+    var(--readout-ink, transparent) 9%,
+    transparent
+  );
+}
+.latency-badge[data-state="good"] {
+  --readout-ink: var(--data-good);
+}
+.latency-badge[data-state="warn"] {
+  --readout-ink: var(--data-warn);
+}
+.latency-badge[data-state="bad"] {
+  --readout-ink: var(--data-bad);
+}
+@media (prefers-reduced-motion: reduce) {
+  .latency-badge {
+    transition: none;
+  }
+}
+
+/* ── Grid: graph paper at two scales, readable but never loud ───────────── */
+body::before {
+  background-image:
+    linear-gradient(var(--backdrop-line-strong) 1px, transparent 1px),
+    linear-gradient(90deg, var(--backdrop-line-strong) 1px, transparent 1px),
+    linear-gradient(var(--backdrop-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--backdrop-line) 1px, transparent 1px);
+  background-size:
+    128px 128px,
+    128px 128px,
+    32px 32px,
+    32px 32px;
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    #000,
+    rgb(0 0 0 / 72%) 70%,
+    rgb(0 0 0 / 28%)
+  );
+  mask-image: linear-gradient(
+    180deg,
+    #000,
+    rgb(0 0 0 / 72%) 70%,
+    rgb(0 0 0 / 28%)
+  );
+}
+
+/* ── Console: page header and the primary readout ───────────────────────── */
+.console-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.console-heading {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.console-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 20px;
+}
+/* The address is the loudest element on the page, so this rule carries the
+   extra class to outrank the earlier `.home-page .home-primary-card .ip-value`. */
+.console-address,
+.home-page .home-primary-card .ip-value.console-address {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 12px;
+  font-family: var(--font-mono);
+  font-size: clamp(1.375rem, 4vw, 2.125rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  overflow-wrap: anywhere;
+}
+.console-address .ip-text {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+/* Scale the flag with the readout instead of leaving it at 18x14. */
+.console-address .country-flag {
+  width: 0.62em;
+  height: 0.46em;
+  vertical-align: 0;
+}
+.console-score {
+  display: grid;
+  align-content: center;
+  justify-items: end;
+  gap: 4px;
+  padding-left: 16px;
+  text-align: right;
+  border-left: 2px solid var(--readout-ink, var(--border));
+}
+.console-score strong {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 2.5rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--readout-ink, var(--foreground));
+}
+.console-score-band {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--readout-ink, var(--subtle));
+}
+.console-facts {
+  margin: 0;
+}
+.console-facts dt {
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+}
+.console-facts dd {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+@media (max-width: 30rem) {
+  .console-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .console-score {
+    justify-items: start;
+    text-align: left;
+  }
+}
+
+/* ── Desktop navigation: flat bar with an active underline ─────────────── */
+@media (min-width: 48.0625rem) {
+  .app-nav {
+    padding: 0 0 8px;
+    margin-bottom: 20px;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+  }
+  .app-nav [role="tab"] {
+    position: relative;
+    border-radius: 0;
+  }
+  /* Inside the scroll viewport, which clips: the rail sits on the tab edge. */
+  .app-nav [role="tab"][data-state="active"]::after {
+    content: "";
+    position: absolute;
+    right: 4px;
+    bottom: 0;
+    left: 4px;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--primary);
+  }
+}
+
+/* Headings read tighter; the numbers below them carry the weight. */
+.page-heading h1,
+.whois-result-name {
+  letter-spacing: -0.02em;
+}
+.section-heading h2,
+.connectivity-heading h2 {
+  letter-spacing: -0.015em;
+}
+
+/* ═══ Tool pages ══════════════════════════════════════════════════════════
+   Same language as the home console, applied to the primitives every tool
+   page shares: page header, group sub-navigation, fact rows, data tables and
+   cards. One hairline system instead of pills, panels and zebra stripes. */
+
+/* Tool pages get a visible title bar, the same structure as the home console. */
+.page-heading .page-heading-text {
+  min-width: 0;
+}
+.page-heading h1 {
+  margin: 0;
+}
+.page-heading p {
+  margin: 4px 0 0;
+  font-size: 0.83rem;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+.page-heading > .page-privacy {
+  margin-bottom: 0;
+}
+.description-row p {
+  font-size: 0.83rem;
+  line-height: 1.5;
+}
+
+.tool-subnav {
+  gap: 0;
+  margin: 0 0 18px;
+  padding: 0;
+  border-bottom: 1px solid var(--border);
+}
+.tool-subnav a {
+  position: relative;
+  padding: 6px 10px 8px;
+  border-radius: 0;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+.tool-subnav a:hover {
+  background: transparent;
+  color: var(--foreground);
+}
+.tool-subnav a[aria-current="page"] {
+  background: transparent;
+  color: var(--foreground);
+  font-weight: 600;
+}
+.tool-subnav a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  bottom: -1px;
+  left: 6px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--primary);
+}
+
+/* Fact rows: hairline above each following row, measured values right-aligned. */
+.facts > div {
+  padding: 7px 0;
+  min-height: 0;
+  border-top: 1px solid var(--rule-row);
+  border-bottom: 0;
+  font-size: 0.83rem;
+}
+.facts > div:first-child {
+  border-top: 0;
+}
+.facts > div:last-child {
+  border-bottom: 0;
+}
+.facts dt {
+  font-size: 0.78rem;
+}
+.facts dd {
+  font-weight: 500;
+}
+
+/* Tables: micro-caps header over hairline rows, no zebra stripes. */
+.data-table table {
+  font-size: 0.84rem;
+}
+.data-table th {
+  height: auto;
+  padding: 0 12px 8px;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.data-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--rule-row);
+  font-variant-numeric: tabular-nums;
+}
+.data-table tbody tr:nth-child(even) {
+  background: transparent;
+}
+.data-table tbody tr:hover {
+  background: color-mix(in oklch, var(--primary) 5%, transparent);
+}
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Cards: structure comes from a hairline, not a floating box. Tool cards are
+   sections of one continuous instrument panel, so the fill, ring and radius
+   that shadcn ships are removed and the inner padding is pulled out to the
+   page gutter. */
+/* Compound selector on purpose: `.app-container [data-slot="card"]` above
+   already zeroes the border, so a lone `.tool-card` would lose to it. */
+.app-container [data-slot="card"].tool-card {
+  gap: 6px;
+  padding-top: 14px;
+  padding-bottom: 16px;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+.tool-card > [data-slot="card-header"],
+.tool-card > [data-slot="card-content"] {
+  padding-inline: 0;
+}
+.tool-card [data-slot="card-title"] {
+  font-size: 0.84rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.ip-dossier-top {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: color-mix(in oklch, var(--card) 72%, transparent);
+}
+.result-title h2 {
+  letter-spacing: -0.02em;
+}
+.status-line {
+  padding: 14px 0;
+  font-size: 0.85rem;
+}
+
+/* ═══ Home surfaces ══════════════════════════════════════════════════════
+   The home page was still a stack of floating filled cards while the tool
+   pages had moved to hairline-separated sections, so the two halves of the
+   site read as different products. These rules give the home cards the same
+   surface as `.tool-card`.
+
+   Scoped to section-level cards only (`> [data-slot="card"]`): the compact
+   tiles inside ExitGroups and friends opt out with their own `py-0`/
+   `rounded-lg`/`border` utilities and must keep them. */
+.home-page > [data-slot="card"],
+.home-overview > [data-slot="card"] {
+  gap: 10px;
+  padding-top: 16px;
+  padding-bottom: 18px;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+.home-page > [data-slot="card"] > [data-slot="card-header"],
+.home-page > [data-slot="card"] > [data-slot="card-content"],
+.home-overview > [data-slot="card"] > [data-slot="card-header"],
+.home-overview > [data-slot="card"] > [data-slot="card-content"] {
+  padding-inline: 0;
+}
+/* The address readouts sit directly under the console bar; they do not need a
+   rule above them. */
+.home-overview > [data-slot="card"]:first-child {
+  border-top: 0;
+  padding-top: 4px;
+}
+
+/* Connectivity tiles: hairline boxes on the panel, not filled chips. */
+.home-page .home-connectivity-card .ping-item {
+  border: 1px solid var(--rule-row);
+  border-radius: 0;
+  background: transparent;
+}
+
+/* Shortcuts: a hairline grid instead of rounded filled tiles. */
+.home-page .home-shortcuts .shortcut-grid {
+  gap: 0;
+  border-top: 1px solid var(--rule-row);
+}
+.home-page .home-shortcuts .shortcut-grid > a {
+  padding: 12px 0;
+  border: 0;
+  border-bottom: 1px solid var(--rule-row);
+  border-radius: 0;
+}
+.home-page .home-shortcuts .shortcut-grid > a:is(:hover, :focus-visible) {
+  background: transparent;
+  color: var(--primary);
+}
+/* The Claude callout is the one deliberately emphasised row, so it keeps a
+   rail: a 2px tinted edge on the left, same idea as the score panel. */
+.home-page .home-shortcuts .shortcut-feature {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, #d97757 24%, transparent);
+  border-left-width: 2px;
+  border-radius: var(--radius);
+  background: color-mix(in srgb, #d97757 6%, transparent);
+}
+.home-page .home-shortcuts .shortcut-feature:is(:hover, :focus-visible) {
+  border-color: color-mix(in srgb, #d97757 45%, transparent);
+  border-left-color: #d97757;
+  background: color-mix(in srgb, #d97757 10%, transparent);
 }

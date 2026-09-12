@@ -10,6 +10,7 @@ import { ipType } from "./ip-type.js";
 import { startPing, pingResult, pingNodes } from "./ping.js";
 import { normalizeStatus } from "./service-status.js";
 import services from "./services.json";
+import { serveStatic } from "./static-assets.js";
 import { tlsFingerprint } from "./tls-fingerprint.js";
 import { lookupRegistration } from "./whois.js";
 
@@ -26,7 +27,7 @@ export default {
         url.protocol = "http:";
         return fetch(new Request(url, request));
       }
-      return env.ASSETS.fetch(request);
+      return serveStatic(request);
     }
     try {
       const origin = request.headers.get("Origin");

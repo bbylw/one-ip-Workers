@@ -1,13 +1,9 @@
+# Single Worker deployment: no [assets] binding. `pnpm build` embeds dist/ into
+# public/worker/assets.generated.js, so `wrangler deploy` publishes the whole site.
 name = "one-ip"
 main = "public/worker/index.js"
 compatibility_date = "2026-09-09"
 compatibility_flags = ["nodejs_compat"]
-
-[assets]
-directory = "./dist"
-binding = "ASSETS"
-not_found_handling = "single-page-application"
-run_worker_first = true
 
 [observability]
 enabled = true

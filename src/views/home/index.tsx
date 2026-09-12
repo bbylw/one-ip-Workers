@@ -12,7 +12,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useSortAnimation } from "@/hooks/use-sort-animation";
 import { t } from "@/i18n";
 import { companyTypeColors } from "@/lib/ip-badge-colors";
-import { ipScoreColor } from "@/lib/ip-score";
+import { ipScoreState } from "@/lib/ip-score";
 import { BrowserSummary } from "@/views/browser/summary";
 import { lookupIp } from "@/views/ip/api";
 import { testConnectivity, type ProbeResult } from "@/views/link/api";
@@ -148,8 +148,8 @@ export function HomePage() {
   const typeByIp = new Map(ips.map((ip, index) => [ip, typeQueries[index]]));
   return (
     <div className="home-page">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h1 className="text-sm font-semibold">{t("网络概览")}</h1>
+      <header className="console-bar">
+        <h1 className="console-heading">{t("网络概览")}</h1>
         <ActionButton
           size="sm"
           variant="outline"
@@ -158,7 +158,7 @@ export function HomePage() {
         >
           {refreshing ? t("检测中...") : t("重新检测")}
         </ActionButton>
-      </div>
+      </header>
       <div className="home-overview home-ip-overview">
         {cards.map(({ query, data, version, label }, index) => {
           const pending = !data && query.isPending;
@@ -231,77 +231,94 @@ export function HomePage() {
                 />
               )}
               <CardContent className="primary-ip-block">
-                <div className="row-between eyebrow">
-                  <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-                    <span>{label}</span>
-                    {typeLabels.map((type) => (
-                      <Badge
-                        key={type.label}
-                        variant="secondary"
-                        className={`h-4 px-1.5 text-[10px] font-medium tracking-normal ${type.color}`}
-                      >
-                        {type.label}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                <div className="home-address-row">
-                  <div className="ip-value">
-                    {pending ? (
-                      <Pending>{t("加载中...")}</Pending>
-                    ) : geo ? (
-                      <>
-                        <CountryFlag code={geo.country_code} />
-                        <IpText ip={geo.ip} link={false} />
-                      </>
-                    ) : (
-                      <span className="muted">
-                        {t("未获取到 IPv")}
-                        {version}
-                      </span>
-                    )}
+                <div className="console-grid">
+                  <div className="console-main">
+                    <div className="row-between eyebrow">
+                      <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                        <span>{label}</span>
+                        {typeLabels.map((type) => (
+                          <Badge
+                            key={type.label}
+                            variant="secondary"
+                            className={`h-4 px-1.5 text-[10px] font-medium tracking-normal ${type.color}`}
+                          >
+                            {type.label}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="ip-value console-address">
+                      {pending ? (
+                        <Pending>{t("加载中...")}</Pending>
+                      ) : geo ? (
+                        <>
+                          <CountryFlag code={geo.country_code} />
+                          <IpText ip={geo.ip} link={false} />
+                        </>
+                      ) : (
+                        <span className="muted">
+                          {t("未获取到 IPv")}
+                          {version}
+                        </span>
+                      )}
+                    </div>
+                    <div className="primary-ip-meta text-sm text-muted-foreground">
+                      {loading ? (
+                        <Pending>{t("正在查询归属信息…")}</Pending>
+                      ) : geo?.country || geo?.city || geo?.isp ? (
+                        <dl className="data-rows console-facts">
+                          <div>
+                            <dt>{t("归属")}</dt>
+                            <dd>
+                              {[geo.country, geo.region, geo.city]
+                                .filter(Boolean)
+                                .filter(
+                                  (item, i, all) => all.indexOf(item) === i,
+                                )
+                                .join(" · ")}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt>{t("网络")}</dt>
+                            <dd>
+                              {[geo.isp, geo.asn ? `AS${geo.asn}` : undefined]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </dd>
+                          </div>
+                        </dl>
+                      ) : data ? (
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <span>{t("归属信息暂不可用")}</span>
+                          <button
+                            type="button"
+                            className="relative z-20 shrink-0 text-primary"
+                            onClick={() => geoByIp.get(data.ip)?.refetch()}
+                          >
+                            {t("重试")}
+                          </button>
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                   {hasScore && (
                     <div
-                      className="ip-reputation-badge shrink-0"
-                      style={{ color: ipScoreColor(score) }}
+                      data-state={ipScoreState(score)}
+                      className="console-score"
                     >
-                      <span>{t("IP 信誉分")}</span>
+                      <span className="readout-label">{t("IP 信誉分")}</span>
                       <strong>
                         <NumberTicker value={score} />
                       </strong>
+                      <span className="console-score-band">
+                        {score >= 75
+                          ? t("可靠")
+                          : score >= 45
+                            ? t("一般")
+                            : t("风险")}
+                      </span>
                     </div>
                   )}
-                </div>
-                <div className="primary-ip-meta text-sm text-muted-foreground">
-                  {loading ? (
-                    <Pending>{t("正在查询归属信息…")}</Pending>
-                  ) : geo?.country || geo?.city || geo?.isp ? (
-                    <>
-                      <p>
-                        {[geo.country, geo.region, geo.city]
-                          .filter(Boolean)
-                          .filter((item, i, all) => all.indexOf(item) === i)
-                          .join(" · ")}
-                      </p>
-                      <p className="mt-1 text-xs">
-                        {[geo.isp, geo.asn ? `AS${geo.asn}` : undefined]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </p>
-                    </>
-                  ) : data ? (
-                    <div className="flex items-center justify-between gap-2 text-xs">
-                      <span>{t("归属信息暂不可用")}</span>
-                      <button
-                        type="button"
-                        className="relative z-20 shrink-0 text-primary"
-                        onClick={() => geoByIp.get(data.ip)?.refetch()}
-                      >
-                        {t("重试")}
-                      </button>
-                    </div>
-                  ) : null}
                 </div>
               </CardContent>
             </Card>

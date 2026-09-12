@@ -126,7 +126,9 @@ export default function IpPage() {
   );
   return (
     <div className="lookup-page ip-detail-page">
-      <h1 className="sr-only">{t("IP 信息查询")}</h1>
+      <header className="console-bar page-heading">
+        <h1 className="console-heading">{t("IP 信息查询")}</h1>
+      </header>
       <ErrorNotice error={query.error} />
       {query.isFetching && (
         <p className="status-line" role="status">

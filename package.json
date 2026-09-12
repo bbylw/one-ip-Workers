@@ -11,10 +11,11 @@
   "scripts": {
     "dev": "vite",
     "deploy": "wrangler deploy",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/build-worker-assets.mjs",
+    "worker:assets": "node scripts/build-worker-assets.mjs",
     "worker:dev": "node scripts/worker-dev.mjs",
     "worker:types": "wrangler types",
-    "test": "wrangler deploy --dry-run --env='' --outdir .worker-test && node --import ./tests/register-paths.mjs --test tests/*.test.mjs",
+    "test": "node scripts/build-worker-assets.mjs && wrangler deploy --dry-run --env='' --outdir .worker-test && node --import ./tests/register-paths.mjs --test tests/*.test.mjs",
     "lint": "oxlint",
     "preview": "vite preview",
     "format": "prettier --write .",
@@ -24,6 +25,7 @@
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "5.2.0",
     "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
     "@hookform/resolvers": "latest",
     "@tanstack/react-query": "latest",
     "@tanstack/react-table": "^8.21.3",

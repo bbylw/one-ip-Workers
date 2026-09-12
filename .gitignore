@@ -16,6 +16,8 @@ dist-ssr
 .dev.vars.*
 worker-configuration.d.ts
 .worker-test
+# SPA files embedded into the Worker bundle by scripts/build-worker-assets.mjs
+public/worker/assets.generated.js
 
 # Editor directories and files
 .vscode/*

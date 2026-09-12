@@ -11,7 +11,6 @@ import {
 
 const env = {
   APP_ENV: "prod",
-  ASSETS: { fetch: async () => new Response("SPA asset") },
   API_LIMITER: { limit: async () => ({ success: true }) },
   ACTION_LIMITER: { limit: async () => ({ success: true }) },
 };
@@ -28,6 +27,57 @@ async function withFetch(fn, run) {
   }
 }
 
+test("the Worker serves the embedded SPA without a Static Assets binding", async () => {
+  const home = await worker.fetch(request("/"), env);
+  assert.equal(home.status, 200);
+  assert.match(home.headers.get("Content-Type"), /^text\/html/);
+  assert.equal(home.headers.get("X-Frame-Options"), "DENY");
+  assert.equal(
+    home.headers.get("Content-Security-Policy"),
+    "frame-ancestors 'none'",
+  );
+  assert.match(await home.text(), /<div id="root">/);
+});
+test("unknown routes fall back to the SPA shell while missing files stay 404", async () => {
+  for (const path of [
+    "/",
+    "/status/claude",
+    "/network/ip/1.1.1.1",
+    "/release-notes.v2",
+  ]) {
+    const route = await worker.fetch(request(path), env);
+    assert.equal(route.status, 200, path);
+    assert.match(route.headers.get("Content-Type"), /^text\/html/, path);
+    assert.match(await route.text(), /<div id="root">/, path);
+  }
+  for (const path of ["/assets/missing.js", "/missing.css", "/missing.woff2"])
+    assert.equal((await worker.fetch(request(path), env)).status, 404, path);
+});
+test("embedded files are revalidated with their content hash", async () => {
+  const asset = await worker.fetch(request("/app-version.json"), env);
+  assert.equal(asset.status, 200);
+  assert.match(asset.headers.get("Cache-Control"), /max-age=0/);
+  assert.ok((await asset.json()).build);
+  const etag = asset.headers.get("ETag");
+  assert.match(etag, /^"[0-9a-f]{32}"$/);
+  const revalidated = await worker.fetch(
+    request("/app-version.json", { headers: { "If-None-Match": etag } }),
+    env,
+  );
+  assert.equal(revalidated.status, 304);
+  assert.equal(revalidated.headers.get("ETag"), etag);
+  const head = await worker.fetch(
+    request("/app-version.json", { method: "HEAD" }),
+    env,
+  );
+  assert.equal(head.status, 200);
+  assert.equal(await head.text(), "");
+  assert.equal(
+    (await worker.fetch(request("/app-version.json", { method: "POST" }), env))
+      .status,
+    405,
+  );
+});
 test("public IP validation rejects private, fake-IP, expanded IPv6, mapped loopback and documentation ranges", () => {
   for (const ip of [
     "127.0.0.1",
@@ -95,10 +145,10 @@ test("request JSON has a strict size limit and rejects invalid shapes", async ()
 test("backend source paths are never served", async () => {
   for (const path of ["/worker", "/worker/index.js", "/worker/services.json"])
     assert.equal((await worker.fetch(request(path), env)).status, 404);
-  assert.equal(
-    await (await worker.fetch(request("/claude/status.html"), env)).text(),
-    "SPA asset",
-  );
+  // Retired pages resolve to the SPA shell instead of a missing file.
+  const retired = await worker.fetch(request("/claude/status.html"), env);
+  assert.equal(retired.status, 200);
+  assert.match(await retired.text(), /<div id="root">/);
 });
 test("unknown APIs return JSON 404 instead of the SPA", async () => {
   const response = await worker.fetch(request("/api/not-found"), env);
