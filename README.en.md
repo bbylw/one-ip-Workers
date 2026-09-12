@@ -17,13 +17,15 @@
 
 A toolbox for IP lookups, network diagnostics, browser checks and AI service status.
 
+This repository is the Cloudflare Workers deployment of [one-ip](https://github.com/zhihui-hu/one-ip): the application is maintained upstream, and this fork keeps only the changes needed to deploy it as a single Worker plus the dependency line. See [SITE.md](SITE.md) for the differences from upstream, the tracked commit and deployment details.
+
 [中文](README.md) · **English**
 
-[Live demo](https://ip.huzhihui.com/) · [GitHub](https://github.com/zhihui-hu/one-ip)
+[Upstream live demo](https://ip.huzhihui.com/) · [Upstream repository](https://github.com/zhihui-hu/one-ip)
 
 Click the button below for one-click deployment to Cloudflare.
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Fzhihui-hu%2Fone-ip)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Fbbylw%2Fone-ip-Workers)
 
 ## Terminal and API
 
@@ -47,7 +49,7 @@ Returns `ip`, `source`, `checked_at`, `score`, `status`, location, ISP, ASN and 
 
 ## Deploy to Cloudflare
 
-1. [Fork this project](https://github.com/zhihui-hu/one-ip/fork) into your GitHub account.
+1. [Fork this repository](https://github.com/bbylw/one-ip-Workers/fork) into your GitHub account.
 2. Open the [Cloudflare dashboard](https://dash.cloudflare.com/), go to **Workers & Pages**, create a Worker and choose to import a Git repository.
 3. Connect GitHub, select your `one-ip` fork and set the production branch to `main`.
 4. Set the build command to `pnpm build` and the deploy command to `pnpm deploy`. Use Node.js 24 and pnpm 12.4.1 (the version pinned by `packageManager` in `package.json`). Keep the default root directory.
@@ -55,7 +57,7 @@ Returns `ip`, `source`, `checked_at`, `score`, `status`, location, ISP, ASN and 
 
 The project deploys as a **single Cloudflare Worker** with no Static Assets binding: `pnpm build` embeds the front end from `dist/` into the Worker, so one `pnpm deploy` publishes both the pages and the `/api/*` routes. Core features require no application environment variables or API keys. See “Verification” for Turnstile and reCAPTCHA setup.
 
-Workers Builds builds and deploys when `main` receives a commit. The button above points to the original repository. To preserve the fork relationship and update workflow, follow the steps to import your fork.
+Workers Builds builds and deploys when `main` receives a commit. The button above deploys this repository's single-Worker setup; upstream feature updates are tracked manually as described in [SITE.md](SITE.md).
 
 ## Features
 

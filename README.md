@@ -19,19 +19,21 @@
 
 IP 查询、网络诊断、浏览器检测与 AI 服务状态工具箱。
 
+本仓库是 [one-ip](https://github.com/zhihui-hu/one-ip) 的 Cloudflare Workers 部署版：应用功能由上游维护，这里只维护以单个 Worker 完成部署所需的改动与依赖跟进。与上游的差异、跟踪点和部署细节见 [SITE.md](SITE.md)。
+
 **中文** · [English](README.en.md)
 
-[在线体验](https://ip.huzhihui.com/) · [GitHub](https://github.com/zhihui-hu/one-ip)
+[上游在线体验](https://ip.huzhihui.com/) · [上游仓库](https://github.com/zhihui-hu/one-ip)
 
 社区友链：[LINUX DO](https://linux.do/) · 真诚、友善、团结、专业。
 
 点击下方按钮，一键部署到 Cloudflare。
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Fzhihui-hu%2Fone-ip)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Fbbylw%2Fone-ip-Workers)
 
 ## Cloudflare 部署教程
 
-1. [Fork 本项目](https://github.com/zhihui-hu/one-ip/fork)到你的 GitHub 账号。
+1. [Fork 本仓库](https://github.com/bbylw/one-ip-Workers/fork)到你的 GitHub 账号。
 2. 登录 [Cloudflare 控制台](https://dash.cloudflare.com/)，进入 **Workers & Pages**，创建 Worker，选择导入 Git 仓库。
 3. 连接 GitHub，选择你的 `one-ip` Fork，生产分支填 `main`。
 4. 构建命令填 `pnpm build`，部署命令填 `pnpm deploy`。使用 Node.js 24 和 pnpm 12.4.1（与 `package.json` 的 `packageManager` 一致），根目录保持默认。
@@ -39,7 +41,7 @@ IP 查询、网络诊断、浏览器检测与 AI 服务状态工具箱。
 
 项目部署为**单个 Cloudflare Worker**，不配置 Static Assets：`pnpm build` 会把 `dist/` 中的前端产物嵌入 Worker，一次 `pnpm deploy` 同时发布页面与 `/api/*` 接口。基础功能无需应用环境变量或 API Key。Turnstile 和 reCAPTCHA 的配置见“验证体验”。
 
-Workers Builds 会在 `main` 收到提交时构建和部署。上方按钮使用原项目地址；需要保留 Fork 关系和更新工作流时，请按教程导入你的 Fork。
+Workers Builds 会在 `main` 收到提交时构建和部署。上方按钮部署的是本仓库的单 Worker 形态；上游功能更新按 [SITE.md](SITE.md) 的方式手动跟踪。
 
 ## 功能
 
